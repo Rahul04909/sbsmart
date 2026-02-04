@@ -8,13 +8,14 @@ $q = trim($_GET['q'] ?? '');
 $filterSql = '';
 $params = [];
 if ($q !== '') {
-    $filterSql = "WHERE s.name LIKE :q OR s.slug LIKE :q OR s.description LIKE :q OR c.name LIKE :q";
+    $filterSql = "WHERE s.name LIKE :q OR s.slug LIKE :q OR s.description LIKE :q OR b.name LIKE :q";
     $params['q'] = '%' . $q . '%';
 }
 
-$stmt = $pdo->prepare("SELECT s.id, s.name, s.slug, s.description, s.category_id, c.name AS category_name, s.created_at
+// Join brands instead of categories
+$stmt = $pdo->prepare("SELECT s.id, s.name, s.slug, s.description, s.brand_id, b.name AS brand_name, s.created_at
     FROM subcategories s
-    LEFT JOIN categories c ON c.id = s.category_id
+    LEFT JOIN brands b ON b.id = s.brand_id
     $filterSql
     ORDER BY s.id DESC");
 $stmt->execute($params);
@@ -34,7 +35,7 @@ $subs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h3>Subcategories</h3>
     <div>
       <a href="subcategory_form.php" class="btn btn-success">Add Subcategory</a>
-      <a href="categories.php" class="btn btn-secondary">Manage Categories</a>
+      <a href="brands.php" class="btn btn-secondary">Manage Brands</a>
     </div>
   </div>
 
@@ -60,7 +61,7 @@ $subs = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <th style="width:40px"><input type="checkbox" id="checkAllSubs"></th>
           <th>#</th>
           <th>Name</th>
-          <th>Category</th>
+          <th>Brand</th>
           <th>Slug</th>
           <th>Description</th>
           <th>Action</th>
@@ -72,7 +73,7 @@ $subs = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <td><input type="checkbox" name="ids[]" value="<?php echo $s['id']; ?>"></td>
           <td><?php echo $s['id']; ?></td>
           <td><?php echo htmlspecialchars($s['name']); ?></td>
-          <td><?php echo htmlspecialchars($s['category_name'] ?? '-'); ?></td>
+          <td><?php echo htmlspecialchars($s['brand_name'] ?? '-'); ?></td>
           <td><?php echo htmlspecialchars($s['slug']); ?></td>
           <td><?php echo htmlspecialchars($s['description']); ?></td>
           <td>

@@ -29,3 +29,6 @@ temp/
 
 # Admin error logs
 admin/error_log
+
+# Git version control
+git-version-control.txt

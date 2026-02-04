@@ -22,7 +22,7 @@ $admin_name = $_SESSION['admin_name'] ?? 'Admin';
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="categories.php">Categories</a>
+          <a class="nav-link" href="brands.php">Brands</a>
         </li>
 
         <li class="nav-item">

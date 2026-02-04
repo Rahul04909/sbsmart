@@ -6,12 +6,12 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php'; // For resolve_image
 
 $q = trim($_GET['q'] ?? '');
-$cat_filter = (int)($_GET['category_id'] ?? 0);
+$brand_id = (int)($_GET['brand_id'] ?? 0);
 $subcat_filter = (int)($_GET['subcategory_id'] ?? 0);
 $status_filter = trim($_GET['status'] ?? ''); // '' | active | inactive
 
-// fetch categories
-$categories = $pdo->query("SELECT id,name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// fetch brands
+$brands = $pdo->query("SELECT id,name FROM brands ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 // build WHERE
 $where = [];
@@ -21,9 +21,9 @@ if ($q !== '') {
     $where[] = "(p.title LIKE :q OR p.sku LIKE :q OR p.short_desc LIKE :q OR p.short_description LIKE :q OR p.description LIKE :q)";
     $params[':q'] = "%$q%";
 }
-if ($cat_filter) {
-    $where[] = "p.category_id = :cat";
-    $params[':cat'] = $cat_filter;
+if ($brand_id) {
+    $where[] = "p.brand_id = :bid";
+    $params[':bid'] = $brand_id;
 }
 if ($subcat_filter) {
     $where[] = "p.subcategory_id = :subcat";
@@ -46,9 +46,9 @@ $stmtc->execute($params);
 $total = (int)$stmtc->fetchColumn();
 
 // fetch products
-$sql = "SELECT p.*, c.name AS category_name, s.name AS subcategory_name
+$sql = "SELECT p.*, b.name AS brand_name, s.name AS subcategory_name
         FROM products p
-        LEFT JOIN categories c ON c.id = p.category_id
+        LEFT JOIN brands b ON b.id = p.brand_id
         LEFT JOIN subcategories s ON s.id = p.subcategory_id
         $whereSql
         ORDER BY p.id DESC
@@ -56,7 +56,7 @@ $sql = "SELECT p.*, c.name AS category_name, s.name AS subcategory_name
 $stmt = $pdo->prepare($sql);
 
 foreach ($params as $k => $v) {
-    if (in_array($k, [':cat', ':subcat'])) $stmt->bindValue($k, (int)$v, PDO::PARAM_INT);
+    if (in_array($k, [':bid', ':subcat'])) $stmt->bindValue($k, (int)$v, PDO::PARAM_INT);
     else $stmt->bindValue($k, $v);
 }
 $stmt->bindValue(':limit', (int)$perPage, PDO::PARAM_INT);
@@ -66,9 +66,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // fetch subcategories for filter
 $subcategories = [];
-if ($cat_filter) {
-    $stmt = $pdo->prepare("SELECT id,name FROM subcategories WHERE category_id = :cid ORDER BY name");
-    $stmt->execute([':cid' => $cat_filter]);
+if ($brand_id) {
+    $stmt = $pdo->prepare("SELECT id,name FROM subcategories WHERE brand_id = :bid ORDER BY name");
+    $stmt->execute([':bid' => $brand_id]);
     $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -135,10 +135,10 @@ function get_thumb($row) {
         </div>
 
         <div class="col-md-2">
-          <select name="category_id" class="form-select" onchange="this.form.submit()">
-            <option value="0">Category: All</option>
-            <?php foreach($categories as $c): ?>
-              <option value="<?php echo (int)$c['id']; ?>" <?php echo $cat_filter== $c['id'] ? 'selected':''; ?>><?php echo htmlspecialchars($c['name']); ?></option>
+          <select name="brand_id" class="form-select" onchange="this.form.submit()">
+            <option value="0">Brand: All</option>
+            <?php foreach($brands as $b): ?>
+              <option value="<?php echo (int)$b['id']; ?>" <?php echo $brand_id== $b['id'] ? 'selected':''; ?>><?php echo htmlspecialchars($b['name']); ?></option>
             <?php endforeach; ?>
           </select>
         </div>
@@ -185,7 +185,7 @@ function get_thumb($row) {
                   <th style="width:40px" class="ps-3"><input class="form-check-input" type="checkbox" id="checkAll"></th>
                   <th style="width:60px">Image</th>
                   <th>Product</th>
-                  <th>Category</th>
+                  <th>Brand</th>
                   <th>Price</th>
                   <th>Stock</th>
                   <th>Status</th>
@@ -210,11 +210,10 @@ function get_thumb($row) {
                              <span class="text-muted fw-normal small">(<?= htmlspecialchars($p['sku']) ?>)</span>
                           <?php endif; ?>
                       </div>
-                      <!-- <div class="small text-muted mb-1">SKU: < ?= htmlspecialchars($p['sku'] ?? 'N/A') ? ></div> -->
                       <div class="truncate-2 text-secondary"><?= htmlspecialchars($p['short_description'] ?? '') ?></div>
                   </td>
                   <td>
-                      <div class="small"><?= htmlspecialchars($p['category_name'] ?? '-') ?></div>
+                      <div class="small"><?= htmlspecialchars($p['brand_name'] ?? '-') ?></div>
                       <?php if(!empty($p['subcategory_name'])): ?>
                           <div class="small text-muted"><i class="bi bi-arrow-return-right"></i> <?= htmlspecialchars($p['subcategory_name']) ?></div>
                       <?php endif; ?>

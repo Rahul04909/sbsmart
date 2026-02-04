@@ -17,13 +17,13 @@ if ($id) {
 } else {
     $product = [
       'sku'=>'','hsn_code'=>'','slug'=>'','title'=>'','short_desc'=>'','short_description'=>'','description'=>'',
-      'price'=>0,'mrp'=>0,'discount_percentage'=>0,'stock'=>0,'image'=>null,'images'=>'[]','images_arr'=>[],'category_id'=>null,'subcategory_id'=>null,
+      'price'=>0,'mrp'=>0,'discount_percentage'=>0,'stock'=>0,'image'=>null,'images'=>'[]','images_arr'=>[],'brand_id'=>null,'subcategory_id'=>null,
       'tags'=>'','status'=>1
     ];
 }
 
-// categories
-$cats = $pdo->query("SELECT id,name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// brands
+$brands = $pdo->query("SELECT id,name FROM brands ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sku = trim($_POST['sku'] ?? '');
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mrp = (float)($_POST['mrp'] ?? 0);
     $discount_percentage = (float)($_POST['discount_percentage'] ?? 0); 
     $stock = (int)($_POST['stock'] ?? 0);
-    $category_id = (int)($_POST['category_id'] ?? 0);
+    $brand_id = (int)($_POST['brand_id'] ?? 0);
     $subcategory_id = (int)($_POST['subcategory_id'] ?? 0);
     $tags = trim($_POST['tags'] ?? '');
     
@@ -99,17 +99,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         if ($id) {
-            $stmt = $pdo->prepare("UPDATE products SET sku=:sku,hsn_code=:hsn_code,slug=:slug,title=:title,short_desc=:short_desc,short_description=:short_description,description=:description,price=:price,mrp=:mrp,discount_percentage=:discount_percentage,stock=:stock,category_id=:category_id,subcategory_id=:subcategory_id,tags=:tags,image=:image,images=:images,status=:status,is_bestseller=:is_bestseller,updated_at=NOW() WHERE id=:id");
+            $stmt = $pdo->prepare("UPDATE products SET sku=:sku,hsn_code=:hsn_code,slug=:slug,title=:title,short_desc=:short_desc,short_description=:short_description,description=:description,price=:price,mrp=:mrp,discount_percentage=:discount_percentage,stock=:stock,brand_id=:brand_id,subcategory_id=:subcategory_id,tags=:tags,image=:image,images=:images,status=:status,is_bestseller=:is_bestseller,updated_at=NOW() WHERE id=:id");
             $stmt->execute([
                 'sku'=>$sku,'hsn_code'=>$hsn_code,'slug'=>$slug,'title'=>$title,'short_desc'=>$short_desc,'short_description'=>$short_description,
-                'description'=>$description,'price'=>$price,'mrp'=>$mrp,'discount_percentage'=>$discount_percentage,'stock'=>$stock,'category_id'=>$category_id,'subcategory_id'=>$subcategory_id,
+                'description'=>$description,'price'=>$price,'mrp'=>$mrp,'discount_percentage'=>$discount_percentage,'stock'=>$stock,'brand_id'=>$brand_id,'subcategory_id'=>$subcategory_id,
                 'tags'=>$tags,'image'=>$imageName,'images'=>$imagesJson,'status'=>$status,'is_bestseller'=>$is_bestseller,'id'=>$id
             ]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO products (sku,hsn_code,slug,title,short_desc,short_description,description,price,mrp,discount_percentage,stock,category_id,subcategory_id,tags,image,images,status,is_bestseller,created_at) VALUES (:sku,:hsn_code,:slug,:title,:short_desc,:short_description,:description,:price,:mrp,:discount_percentage,:stock,:category_id,:subcategory_id,:tags,:image,:images,:status,:is_bestseller,NOW())");
+            $stmt = $pdo->prepare("INSERT INTO products (sku,hsn_code,slug,title,short_desc,short_description,description,price,mrp,discount_percentage,stock,brand_id,subcategory_id,tags,image,images,status,is_bestseller,created_at) VALUES (:sku,:hsn_code,:slug,:title,:short_desc,:short_description,:description,:price,:mrp,:discount_percentage,:stock,:brand_id,:subcategory_id,:tags,:image,:images,:status,:is_bestseller,NOW())");
             $stmt->execute([
                 'sku'=>$sku,'hsn_code'=>$hsn_code,'slug'=>$slug,'title'=>$title,'short_desc'=>$short_desc,'short_description'=>$short_description,
-                'description'=>$description,'price'=>$price,'mrp'=>$mrp,'discount_percentage'=>$discount_percentage,'stock'=>$stock,'category_id'=>$category_id,'subcategory_id'=>$subcategory_id,
+                'description'=>$description,'price'=>$price,'mrp'=>$mrp,'discount_percentage'=>$discount_percentage,'stock'=>$stock,'brand_id'=>$brand_id,'subcategory_id'=>$subcategory_id,
                 'tags'=>$tags,'image'=>$imageName,'images'=>$imagesJson,'status'=>$status,'is_bestseller'=>$is_bestseller
             ]);
             $id = $pdo->lastInsertId();
@@ -159,11 +159,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="row mt-3">
       <div class="col-md-6">
-        <label>Category</label>
-        <select name="category_id" id="category_id" class="form-control">
-          <option value="">-- Select category --</option>
-          <?php foreach($cats as $c): ?>
-            <option value="<?php echo $c['id']; ?>" <?php echo ($c['id']==($product['category_id'] ?? '')) ? 'selected':''; ?>><?php echo htmlspecialchars($c['name']); ?></option>
+        <label>Brand</label>
+        <select name="brand_id" id="brand_id" class="form-control">
+          <option value="">-- Select brand --</option>
+          <?php foreach($brands as $b): ?>
+            <option value="<?php echo $b['id']; ?>" <?php echo ($b['id']==($product['brand_id'] ?? '')) ? 'selected':''; ?>><?php echo htmlspecialchars($b['name']); ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -234,11 +234,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-document.getElementById('category_id').addEventListener('change', function(){
-  var cat = this.value;
+document.getElementById('brand_id').addEventListener('change', function(){
+  var bid = this.value;
   var sel = document.getElementById('subcategory_id');
   sel.innerHTML = '<option>Loading...</option>';
-  fetch('ajax_subcategories.php?category_id=' + encodeURIComponent(cat))
+  fetch('ajax_subcategories.php?brand_id=' + encodeURIComponent(bid))
     .then(r=>r.json())
     .then(data=>{
       var html = '<option value="">-- Select subcategory --</option>';
@@ -249,8 +249,8 @@ document.getElementById('category_id').addEventListener('change', function(){
       sel.innerHTML = html;
     }).catch(e=>{ sel.innerHTML = '<option value="">-- Select subcategory --</option>'; });
 });
-<?php if(!empty($product['category_id'])): ?>
-document.getElementById('category_id').dispatchEvent(new Event('change'));
+<?php if(!empty($product['brand_id'])): ?>
+document.getElementById('brand_id').dispatchEvent(new Event('change'));
 <?php endif; ?>
 
 </script>

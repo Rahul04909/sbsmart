@@ -11,30 +11,30 @@ if ($id) {
     $sub = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$sub) die('Not found');
 } else {
-    $sub = ['category_id'=>'','name'=>'','slug'=>'','description'=>''];
+    $sub = ['brand_id'=>'','name'=>'','slug'=>'','description'=>''];
 }
 
-// load categories for dropdown
-$cats = $pdo->query("SELECT id,name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// load brands for dropdown
+$brands = $pdo->query("SELECT id,name FROM brands ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category_id = (int)($_POST['category_id'] ?? 0);
+    $brand_id = (int)($_POST['brand_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $slug = trim($_POST['slug'] ?? '');
     $description = trim($_POST['description'] ?? '');
 
-    if ($category_id <= 0) $errors[] = 'Select category';
+    if ($brand_id <= 0) $errors[] = 'Select brand';
     if ($name === '') $errors[] = 'Name required';
     if ($slug === '') $slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]+/','-',$name));
 
     if (empty($errors)) {
         if ($id) {
-            $stmt = $pdo->prepare("UPDATE subcategories SET category_id=:category_id, name=:name, slug=:slug, description=:description WHERE id=:id");
-            $stmt->execute(['category_id'=>$category_id,'name'=>$name,'slug'=>$slug,'description'=>$description,'id'=>$id]);
+            $stmt = $pdo->prepare("UPDATE subcategories SET brand_id=:brand_id, name=:name, slug=:slug, description=:description WHERE id=:id");
+            $stmt->execute(['brand_id'=>$brand_id,'name'=>$name,'slug'=>$slug,'description'=>$description,'id'=>$id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO subcategories (category_id,name,slug,description,created_at) VALUES (:category_id,:name,:slug,:description,NOW())");
-            $stmt->execute(['category_id'=>$category_id,'name'=>$name,'slug'=>$slug,'description'=>$description]);
+            $stmt = $pdo->prepare("INSERT INTO subcategories (brand_id,name,slug,description,created_at) VALUES (:brand_id,:name,:slug,:description,NOW())");
+            $stmt->execute(['brand_id'=>$brand_id,'name'=>$name,'slug'=>$slug,'description'=>$description]);
         }
         header('Location: subcategories.php');
         exit;
@@ -58,11 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <form method="post">
     <div class="mb-2">
-      <label>Category</label>
-      <select class="form-control" name="category_id" required>
-        <option value="">-- Select category --</option>
-        <?php foreach($cats as $c): ?>
-          <option value="<?php echo $c['id']; ?>" <?php echo ($c['id']==($sub['category_id'] ?? '')) ? 'selected' : ''; ?>><?php echo htmlspecialchars($c['name']); ?></option>
+      <label>Brand</label>
+      <select class="form-control" name="brand_id" required>
+        <option value="">-- Select brand --</option>
+        <?php foreach($brands as $b): ?>
+          <option value="<?php echo $b['id']; ?>" <?php echo ($b['id']==($sub['brand_id'] ?? '')) ? 'selected' : ''; ?>><?php echo htmlspecialchars($b['name']); ?></option>
         <?php endforeach; ?>
       </select>
     </div>
