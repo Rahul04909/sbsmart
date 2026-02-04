@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /includes/
+Disallow: /auth/
+Sitemap: https://sbsmart.in/sitemap.xml
