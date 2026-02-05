@@ -539,81 +539,71 @@ try {
         0% { transform: translate(0, 0) scale(1); }
         100% { transform: translate(30px, 40px) scale(1.1); }
     }
-    /* Stats Section */
+    /* Stats Section - Minimalist Redesign */
     .stats-section {
-        background: linear-gradient(135deg, var(--menu-bg) 0%, #004bb5 100%);
-        color: #fff;
+        background: #fff;
+        color: #212529;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
     }
     .stat-item {
         position: relative;
-        padding: 1.5rem;
-        border-radius: 1rem;
+        padding: 1rem;
+        /* Removed card styling for cleaner look */
+        background: transparent;
+        border: none;
         transition: transform 0.3s ease;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255,255,255,0.1);
     }
     .stat-item:hover {
         transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.15);
     }
     .stat-number {
         font-size: 3.5rem;
         font-weight: 800;
-        line-height: 1.1;
+        line-height: 1;
         margin-bottom: 0.5rem;
-        letter-spacing: -1px;
-        word-break: break-word;
+        letter-spacing: -2px;
+        color: var(--primary-color); /* Blue numbers */
     }
     .stat-label {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-        opacity: 0.9;
-        line-height: 1.3;
+        color: #6c757d; /* Muted gray label */
+        line-height: 1.4;
     }
     
+    /* Decoration: Vertical divider for desktop */
+    @media (min-width: 768px) {
+        .stat-col:not(:last-child) .stat-item::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background-color: #eee;
+        }
+    }
+
     /* Mobile Optimizations for Stats */
     @media (max-width: 767.98px) {
         .stats-section .display-5 {
-            font-size: 1.75rem;
+            font-size: 2rem;
         }
         .stats-section .lead {
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
         .stat-item {
-            padding: 1rem 0.75rem;
-            border-radius: 0.75rem;
+            padding: 0.5rem;
         }
         .stat-number {
-            font-size: 1.75rem;
-            margin-bottom: 0.35rem;
-            letter-spacing: -0.5px;
-        }
-        /* Smaller font for large numbers (5-6 digits like 10,000 and 160,000) */
-        .stat-number .counter[data-target="10000"],
-        .stat-number .counter[data-target="160000"] {
-            font-size: 1.4rem;
+            font-size: 2.5rem;
+            margin-bottom: 0.25rem;
         }
         .stat-label {
-            font-size: 0.65rem;
-            letter-spacing: 0.3px;
-            line-height: 1.2;
-        }
-    }
-    
-    /* Extra small screens */
-    @media (max-width: 374.98px) {
-        .stat-number {
-            font-size: 1.5rem;
-        }
-        .stat-number .counter[data-target="10000"],
-        .stat-number .counter[data-target="160000"] {
-            font-size: 1.2rem;
-        }
-        .stat-label {
-            font-size: 0.6rem;
+            font-size: 0.75rem;
         }
     }
 </style>
@@ -999,32 +989,32 @@ $browse_categories = [
 <section class="stats-section py-5 my-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-2">Numbers at a Glance</h2>
-            <p class="lead opacity-75">Innovating Distribution in Industrial Electricals Since 1992.</p>
+            <h2 class="display-5 fw-bold mb-2">Numbers that Matter</h2>
+            <p class="lead text-muted">Empowering Industry Since 1992</p>
         </div>
         <div class="row g-4 justify-content-center text-center">
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3 stat-col">
                 <div class="stat-item h-100">
                     <div class="stat-number"><span class="counter" data-target="10000">0</span>+</div>
-                    <div class="stat-label">SKUs</div>
+                    <div class="stat-label">SKUs Available</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3 stat-col">
                 <div class="stat-item h-100">
                     <div class="stat-number"><span class="counter" data-target="7">0</span>+</div>
-                    <div class="stat-label">Internationally Acclaimed Principles</div>
+                    <div class="stat-label">Global Brands</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3 stat-col">
                 <div class="stat-item h-100">
                     <div class="stat-number"><span class="counter" data-target="34">0</span>+</div>
-                    <div class="stat-label">Years of Excellence</div>
+                    <div class="stat-label">Years of Trust</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3 stat-col">
                 <div class="stat-item h-100">
                     <div class="stat-number"><span class="counter" data-target="160000">0</span></div>
-                    <div class="stat-label">PIN Codes Covered (Pan-India)</div>
+                    <div class="stat-label">PIN Codes Covered</div>
                 </div>
             </div>
         </div>
