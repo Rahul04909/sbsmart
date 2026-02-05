@@ -282,15 +282,19 @@ try {
     
     /* Feature Icons (Why Choose Us) - Minimalist */
     .feature-box {
-        background: transparent; /* No box background */
+        background: transparent;
         padding: 1.5rem;
-        /* No border or shadow */
         border: none; 
         transition: transform 0.3s;
+        height: 100%; /* Ensure equal height alignment */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
     }
     .feature-box:hover { transform: translateY(-3px); }
     .feature-icon {
-        width: 70px; height: 70px; /* Slightly larger */
+        width: 70px; height: 70px;
         background: rgba(13, 110, 253, 0.08);
         color: var(--primary-color);
         border-radius: 50%;
@@ -300,7 +304,7 @@ try {
     }
 
     /* Trust Section */
-    .trust-section { background: #fff; /* kept white */ }
+    .trust-section { background: #f8f9fa; border: none; }
 
     /* Search Bar Hero */
     .search-hero-input {
@@ -321,37 +325,53 @@ try {
         box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
     }
     
-    /* FAQ Section Styles - Clean/Flush */
-    .faq-section { background-color: #fff; } /* White background */
+    /* FAQ Section Styles - Professional & Clean */
+    .faq-section { background-color: #f8f9fa; } 
     .accordion-item { 
         border: none; 
-        border-bottom: 1px solid #eee; /* Separator */
+        border-bottom: 1px solid #e9ecef; /* Subtle separator */
         margin-bottom: 0; 
         border-radius: 0 !important; 
         box-shadow: none; 
+        background: transparent; 
     }
     .accordion-button { 
         font-weight: 600; 
-        padding: 1.5rem 0; /* Vertical padding, no horizontal */
-        background: #fff; 
+        padding: 1.5rem 0; 
+        background: transparent; 
         color: #212529;
-        box-shadow: none !important; /* No focus shadow */
+        box-shadow: none !important; 
+        font-size: 1.05rem;
     }
     .accordion-button:not(.collapsed) { 
-        background-color: #fff; 
+        background-color: transparent; 
         color: var(--primary-color); 
         box-shadow: none; 
     }
+    /* Custom Plus/Minus Icon */
     .accordion-button::after {
-        /* Optional: Custom arrow or keep default */
-        background-size: 1rem;
+        background-image: none; /* Remove default chevron */
+        content: "\F4FE"; /* bi-plus-lg */
+        font-family: "bootstrap-icons";
+        font-weight: bold;
+        transform: none;
+        transition: transform 0.3s ease;
+        line-height: 1;
+        font-size: 1.2rem;
+        color: #6c757d;
+        height: auto; width: auto; /* reset default sizing */
+    }
+    .accordion-button:not(.collapsed)::after {
+        content: "\F330"; /* bi-dash-lg */
+        transform: rotate(180deg); /* Optional flair */
+        color: var(--primary-color);
     }
     .accordion-body { 
         padding-left: 0; 
         padding-right: 0; 
         padding-bottom: 1.5rem;
         padding-top: 0;
-        background: #fff; 
+        background: transparent; 
         color: #555; 
         line-height: 1.7; 
     }
@@ -567,10 +587,9 @@ try {
     }
     /* Stats Section - Minimalist Redesign */
     .stats-section {
-        background: #fff;
+        background: #f8f9fa; /* Matches body */
         color: #212529;
-        border-top: 1px solid #eee;
-        border-bottom: 1px solid #eee;
+        border: none;
     }
     .stat-item {
         position: relative;
