@@ -280,28 +280,27 @@ try {
     .product-price { font-size: 1.1rem; font-weight: 700; color: #212529; }
     .product-mrp { font-size: 0.9rem; text-decoration: line-through; color: #999; }
     
-    /* Feature Icons */
+    /* Feature Icons (Why Choose Us) - Minimalist */
     .feature-box {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 12px;
-        height: 100%;
+        background: transparent; /* No box background */
+        padding: 1.5rem;
+        /* No border or shadow */
+        border: none; 
         transition: transform 0.3s;
-        border: 1px solid #eee;
     }
-    .feature-box:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .feature-box:hover { transform: translateY(-3px); }
     .feature-icon {
-        width: 60px; height: 60px;
-        background: rgba(13, 110, 253, 0.1);
+        width: 70px; height: 70px; /* Slightly larger */
+        background: rgba(13, 110, 253, 0.08);
         color: var(--primary-color);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
     }
 
     /* Trust Section */
-    .trust-section { background: #fff; border-top: 1px solid #eee; }
+    .trust-section { background: #fff; /* kept white */ }
 
     /* Search Bar Hero */
     .search-hero-input {
@@ -322,13 +321,40 @@ try {
         box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
     }
     
-    /* FAQ Section Styles */
-    .faq-section { background-color: #f8f9fa; }
-    .accordion-item { border: none; margin-bottom: 1rem; border-radius: 8px !important; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-    .accordion-button { font-weight: 600; padding: 1.2rem; background: #fff; }
-    .accordion-button:not(.collapsed) { background-color: #e7f1ff; color: var(--primary-color); box-shadow: none; }
-    .accordion-button:focus { box-shadow: none; border-color: rgba(0,0,0,.125); }
-    .accordion-body { background: #fff; color: #555; line-height: 1.6; }
+    /* FAQ Section Styles - Clean/Flush */
+    .faq-section { background-color: #fff; } /* White background */
+    .accordion-item { 
+        border: none; 
+        border-bottom: 1px solid #eee; /* Separator */
+        margin-bottom: 0; 
+        border-radius: 0 !important; 
+        box-shadow: none; 
+    }
+    .accordion-button { 
+        font-weight: 600; 
+        padding: 1.5rem 0; /* Vertical padding, no horizontal */
+        background: #fff; 
+        color: #212529;
+        box-shadow: none !important; /* No focus shadow */
+    }
+    .accordion-button:not(.collapsed) { 
+        background-color: #fff; 
+        color: var(--primary-color); 
+        box-shadow: none; 
+    }
+    .accordion-button::after {
+        /* Optional: Custom arrow or keep default */
+        background-size: 1rem;
+    }
+    .accordion-body { 
+        padding-left: 0; 
+        padding-right: 0; 
+        padding-bottom: 1.5rem;
+        padding-top: 0;
+        background: #fff; 
+        color: #555; 
+        line-height: 1.7; 
+    }
 
     /* Responsive Banner with Zoom Effect */
     .carousel-item {
@@ -1064,8 +1090,8 @@ $browse_categories = [
         </div>
         
         <div class="row justify-content-center">
-            <div class="col-lg-12 animate-on-scroll">
-                <div class="accordion" id="faqAccordion">
+            <div class="col-lg-8 animate-on-scroll"> <!-- Reduced width for better readability on desktop -->
+                <div class="accordion accordion-flush" id="faqAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
