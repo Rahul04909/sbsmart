@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// category.php — Displays a paginated list of products filtered by category or subcategory.
+// brand.php — Displays a paginated list of products filtered by brand or subcategory.
 
 require_once __DIR__ . '/includes/helpers.php';
 require_once __DIR__ . '/includes/db.php';
@@ -25,19 +25,21 @@ if (!function_exists('csrf_input')) {
 
 // Ensure required helpers present (best-effort)
 if (!function_exists('esc') || !function_exists('format_price') || !function_exists('resolve_image')) {
-    error_log("CATEGORY.PHP FATAL: Required helpers are missing.");
+    error_log("BRAND.PHP FATAL: Required helpers are missing.");
     http_response_code(500);
     die("Application configuration error. Please check includes/helpers.php.");
 }
 
 // --- Input Validation ---
 $filterId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$filterType = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : 'cat';
-$filterType = in_array($filterType, ['cat', 'sub'], true) ? $filterType : 'cat';
+// We now support 'brand' or 'sub' (legacy 'cat' redirected to 'brand' logic internally)
+$filterType = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : 'brand';
+if ($filterType === 'cat') $filterType = 'brand'; // redirect cat -> brand logic
+$filterType = in_array($filterType, ['brand', 'sub'], true) ? $filterType : 'brand';
 
 if ($filterId <= 0) {
     http_response_code(400);
-    die("Invalid category or subcategory ID.");
+    die("Invalid brand or subcategory ID.");
 }
 
 // --- Configuration ---
@@ -45,7 +47,7 @@ $limit = 12;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $limit;
 
-$filter_column = ($filterType === 'sub') ? 'p.subcategory_id' : 'p.category_id';
+$filter_column = ($filterType === 'sub') ? 'p.subcategory_id' : 'p.brand_id';
 $where_clause = "WHERE p.status = 1 AND {$filter_column} = :id";
 $search_params = [':id' => $filterId];
 
@@ -56,8 +58,8 @@ $total_pages = 1;
 try {
     $pdo = get_db();
 
-    // Fetch filter name (category/subcategory)
-    $table = ($filterType === 'sub') ? 'subcategories' : 'categories';
+    // Fetch filter name (brand/subcategory)
+    $table = ($filterType === 'sub') ? 'subcategories' : 'brands';
     $safeTable = preg_replace('/[^a-z_]/i', '', $table); // basic safeguard
     $name_stmt = $pdo->prepare("SELECT name FROM {$safeTable} WHERE id = :id LIMIT 1");
     $name_stmt->execute([':id' => $filterId]);
@@ -73,7 +75,7 @@ try {
     $total_products = (int)$count_stmt->fetchColumn();
     $total_pages = max(1, (int)ceil($total_products / $limit));
 } catch (Throwable $e) {
-    error_log("category.php count error: " . $e->getMessage());
+    error_log("brand.php count error: " . $e->getMessage());
     $total_products = 0;
     $total_pages = 1;
 }
@@ -97,7 +99,7 @@ if ($total_products > 0) {
         $stmt->execute();
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Throwable $e) {
-        error_log("category.php products fetch error: " . $e->getMessage());
+        error_log("brand.php products fetch error: " . $e->getMessage());
         $products = [];
     }
 }
@@ -107,7 +109,11 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="container py-5">
-    <?php if ($filterId === 3 && $filterType === 'cat'): ?>
+    <?php 
+    // Example specific content logic (previously for ID 3, assuming Flender brand ID was 3)
+    // You might want to remove this or adapt it if ID 3 is still Flender in Brands table
+    if ($filterId === 3 && $filterType === 'brand'): 
+    ?>
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="text-center mb-5">
@@ -204,7 +210,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="card h-100 product-card shadow-sm">
 
                         <div class="position-relative">
-                            <a href="/product.php?id=<?= $pid ?>" class="d-block skeleton-box">
+                            <a href="product.php?id=<?= $pid ?>" class="d-block skeleton-box">
                                 <img src="<?= $img ?>" class="card-img-top" alt="<?= $title ?>" loading="lazy"
                                      style="height:220px; object-fit:contain; background:#fff;"
                                      onerror="this.onerror=null;this.src='<?= esc(resolve_image('')) ?>';">
@@ -221,7 +227,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div> 
                         <div class="card-body d-flex flex-column">
                             <h3 class="h6 card-title mb-1" title="<?= $title ?>">
-                                <a class="stretched-link" href="/product.php?id=<?= $pid ?>">
+                                <a class="stretched-link" href="product.php?id=<?= $pid ?>">
                                     <?= $dName ?>
                                     <?php if(!empty($dSub)): ?>
                                         <br><span class="text-muted small fw-normal" style="font-size:0.75rem;">(<?= $dSub ?>)</span>
@@ -278,7 +284,7 @@ require_once __DIR__ . '/includes/header.php';
                 $query['id'] = $filterId;
                 $query['type'] = $filterType;
                 $base_query = http_build_query(array_diff_key($query, array_flip(['page'])));
-                $base_url = '/category.php' . ($base_query ? ('?' . $base_query) : '');
+                $base_url = 'brand.php' . ($base_query ? ('?' . $base_query) : '');
                 ?>
 
                 <!-- Previous Button -->

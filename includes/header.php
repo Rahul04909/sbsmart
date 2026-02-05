@@ -22,9 +22,9 @@ if (!function_exists('db')) {
     }
 }
 
-// lightweight per-request cache for nav categories
+// lightweight per-request cache for nav brands
 static $cachedNav = null;
-$navCats = [];
+$navCats = []; // keeping var name to minimize diff noise
 
 try {
     if (function_exists('db')) {
@@ -37,10 +37,11 @@ try {
         }
 
         if ($cachedNav === null && $pdo instanceof \PDO) {
-            $sql = "SELECT c.id AS cat_id, c.name AS cat_name, s.id AS sub_id, s.name AS sub_name
-                    FROM categories c
-                    LEFT JOIN subcategories s ON s.category_id = c.id
-                    ORDER BY c.name, s.name";
+            // Updated to fetch Brands
+            $sql = "SELECT b.id AS cat_id, b.name AS cat_name, s.id AS sub_id, s.name AS sub_name
+                    FROM brands b
+                    LEFT JOIN subcategories s ON s.brand_id = b.id
+                    ORDER BY b.name, s.name";
             $stmt = $pdo->query($sql);
             if ($stmt !== false) {
                 $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -64,7 +65,7 @@ try {
             // Convert associative to sequential preserving order
             $navCats = array_values($tmp);
 
-            // Custom Sort Order requested by User
+            // Custom Sort Order requested by User (Likely Brands)
             $desiredOrder = [
                 'Siemens', 
                 'Innomotics', 
@@ -88,9 +89,6 @@ try {
                 $nameA = strtolower(trim((string)$a['name']));
                 $nameB = strtolower(trim((string)$b['name']));
                 
-                // Check exact match or partial match if needed, but exact is safer
-                // If "Asco Schneider" is in DB as "Asco", we might miss it. 
-                // Using simple exact match for now based on user input.
                 $rankA = isset($orderMap[$nameA]) ? $orderMap[$nameA] : $defaultRank;
                 $rankB = isset($orderMap[$nameB]) ? $orderMap[$nameB] : $defaultRank;
                 
@@ -647,7 +645,7 @@ document.addEventListener('click', function(e){
                       $toggleId = 'catToggle' . $id;
                       ?>
                       <div class="dropdown">
-                        <a class="menu-item dropdown-toggle" href="category.php?id=<?= $id ?>&type=cat" id="<?= $toggleId ?>" aria-expanded="false">
+                        <a class="menu-item dropdown-toggle" href="brand.php?id=<?= $id ?>&type=brand" id="<?= $toggleId ?>" aria-expanded="false">
                           <?= $name ?>
                         </a>
                         <ul class="dropdown-menu shadow border-0" aria-labelledby="<?= $toggleId ?>">
@@ -655,14 +653,14 @@ document.addEventListener('click', function(e){
                           // Simple list for subcategories
                           foreach ($cat['subs'] as $sub): ?>
                             <li>
-                              <a class="dropdown-item" href="category.php?id=<?= (int)$sub['id'] ?>&type=sub">
+                              <a class="dropdown-item" href="brand.php?id=<?= (int)$sub['id'] ?>&type=sub">
                                 <?= htmlspecialchars($sub['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?>
                               </a>
                             </li>
                           <?php endforeach; ?>
                           <li><hr class="dropdown-divider"></li>
                           <li>
-                            <a class="dropdown-item fw-bold text-primary" href="category.php?id=<?= $id ?>&type=cat">
+                            <a class="dropdown-item fw-bold text-primary" href="brand.php?id=<?= $id ?>&type=brand">
                               View all <?= $name ?>
                             </a>
                           </li>
@@ -670,7 +668,7 @@ document.addEventListener('click', function(e){
                       </div>
                       <?php
                   } else {
-                      echo '<a class="menu-item" href="category.php?id=' . $id . '&type=cat">' . $name . '</a>';
+                      echo '<a class="menu-item" href="brand.php?id=' . $id . '&type=brand">' . $name . '</a>';
                   }
               } else {
                   $extra[] = $cat;
@@ -686,7 +684,7 @@ document.addEventListener('click', function(e){
                 <ul class="dropdown-menu shadow border-0" aria-labelledby="moreMenu">
                   <?php foreach ($extra as $cat): ?>
                     <li>
-                      <a class="dropdown-item" href="category.php?id=<?= (int)$cat['id'] ?>&type=cat">
+                      <a class="dropdown-item" href="brand.php?id=<?= (int)$cat['id'] ?>&type=brand">
                         <?= htmlspecialchars($cat['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?>
                       </a>
                     </li>
@@ -741,14 +739,14 @@ document.addEventListener('click', function(e){
             <?php if (!empty($cat['subs'])): ?>
               <div class="collapse bg-light" id="catCollapse<?= (int)$cat['id'] ?>">
                 <?php foreach ($cat['subs'] as $sub): ?>
-                  <a class="d-block py-2 ps-4 text-decoration-none text-secondary border-bottom border-light" href="category.php?id=<?= (int)$sub['id'] ?>&type=sub">
+                  <a class="d-block py-2 ps-4 text-decoration-none text-secondary border-bottom border-light" href="brand.php?id=<?= (int)$sub['id'] ?>&type=sub">
                       <i class="bi bi-caret-right-fill small me-1 opacity-50"></i> <?= htmlspecialchars($sub['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?>
                   </a>
                 <?php endforeach; ?>
-                <a class="d-block py-2 ps-4 text-decoration-none fw-bold text-primary" href="category.php?id=<?= (int)$cat['id'] ?>&type=cat">View all <?= htmlspecialchars($cat['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?></a>
+                <a class="d-block py-2 ps-4 text-decoration-none fw-bold text-primary" href="brand.php?id=<?= (int)$cat['id'] ?>&type=brand">View all <?= htmlspecialchars($cat['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?></a>
               </div>
             <?php else: ?>
-              <div class="mt-0"><a class="d-block py-2 ps-4 text-decoration-none" href="category.php?id=<?= (int)$cat['id'] ?>&type=cat">View <?= htmlspecialchars($cat['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?></a></div>
+              <div class="mt-0"><a class="d-block py-2 ps-4 text-decoration-none" href="brand.php?id=<?= (int)$cat['id'] ?>&type=brand">View <?= htmlspecialchars($cat['name'], ENT_QUOTES|ENT_SUBSTITUTE) ?></a></div>
             <?php endif; ?>
           </div>
         <?php endforeach; ?>
