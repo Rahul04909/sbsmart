@@ -280,27 +280,48 @@ try {
     .product-price { font-size: 1.1rem; font-weight: 700; color: #212529; }
     .product-mrp { font-size: 0.9rem; text-decoration: line-through; color: #999; }
     
-    /* Feature Icons (Why Choose Us) - Minimalist */
+    /* Feature Icons (Why Choose Us) - Horizontal Grid Layout */
+    .trust-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+    }
+    @media (min-width: 576px) { .trust-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 992px) { .trust-grid { grid-template-columns: repeat(4, 1fr); } }
+
     .feature-box {
         background: transparent;
-        padding: 1.5rem;
-        border: none; 
-        transition: transform 0.3s;
-        height: 100%; /* Ensure equal height alignment */
+        padding: 0;
+        border: none;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
+        flex-direction: column; /* Vertical stack for clean look, but aligned */
+        align-items: center;     /* Center align */
+        text-align: center;
+        height: 100%;
+        transition: transform 0.3s;
     }
-    .feature-box:hover { transform: translateY(-3px); }
+    .feature-box:hover { transform: translateY(-5px); }
+    
     .feature-icon {
-        width: 70px; height: 70px;
-        background: rgba(13, 110, 253, 0.08);
+        width: 80px; height: 80px;
+        background: #e7f1ff; /* Light blue background */
         color: var(--primary-color);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.75rem;
-        margin-bottom: 1.25rem;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        flex-shrink: 0;
+    }
+    .feature-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        color: #212529;
+    }
+    .feature-desc {
+        font-size: 0.9rem;
+        color: #6c757d;
+        line-height: 1.5;
     }
 
     /* Trust Section */
@@ -325,53 +346,57 @@ try {
         box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
     }
     
-    /* FAQ Section Styles - Professional & Clean */
+    /* FAQ Section Styles - Floating Cards */
     .faq-section { background-color: #f8f9fa; } 
-    .accordion-item { 
-        border: none; 
-        border-bottom: 1px solid #e9ecef; /* Subtle separator */
-        margin-bottom: 0; 
-        border-radius: 0 !important; 
-        box-shadow: none; 
-        background: transparent; 
+    .accordion-flush .accordion-item {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.03); 
+        border-radius: 12px !important;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        overflow: hidden; /* For border radius */
+    }
+    .accordion-flush .accordion-item:last-child {
+        margin-bottom: 0;
     }
     .accordion-button { 
         font-weight: 600; 
-        padding: 1.5rem 0; 
-        background: transparent; 
+        padding: 1.5rem; 
+        background: #fff; 
         color: #212529;
         box-shadow: none !important; 
         font-size: 1.05rem;
+        border-radius: 12px !important; /* When collapsed */
     }
     .accordion-button:not(.collapsed) { 
-        background-color: transparent; 
+        background-color: #fff; 
         color: var(--primary-color); 
         box-shadow: none; 
+        border-bottom: 1px solid #f0f0f0;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
     }
-    /* Custom Plus/Minus Icon */
+    /* Custom Plus/Minus Icon - Aligned Right */
     .accordion-button::after {
-        background-image: none; /* Remove default chevron */
+        background-image: none; 
         content: "\F4FE"; /* bi-plus-lg */
         font-family: "bootstrap-icons";
         font-weight: bold;
-        transform: none;
-        transition: transform 0.3s ease;
+        transform: rotate(0deg);
+        transition: transform 0.3s ease, color 0.3s ease;
         line-height: 1;
-        font-size: 1.2rem;
-        color: #6c757d;
-        height: auto; width: auto; /* reset default sizing */
+        font-size: 1.1rem;
+        color: #adb5bd;
+        margin-left: auto; /* Push to right */
     }
     .accordion-button:not(.collapsed)::after {
         content: "\F330"; /* bi-dash-lg */
-        transform: rotate(180deg); /* Optional flair */
+        transform: rotate(180deg); 
         color: var(--primary-color);
     }
     .accordion-body { 
-        padding-left: 0; 
-        padding-right: 0; 
-        padding-bottom: 1.5rem;
-        padding-top: 0;
-        background: transparent; 
+        padding: 1.5rem;
+        background: #fff; 
         color: #555; 
         line-height: 1.7; 
     }
@@ -1067,34 +1092,26 @@ $browse_categories = [
 </section><!-- WHY CHOOSE US -->
 <div class="trust-section py-5">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="feature-box text-center">
-                    <div class="feature-icon mx-auto"><i class="bi bi-truck"></i></div>
-                    <h5 class="fw-bold">Fast Delivery</h5>
-                    <p class="text-muted small mb-0">Reliable logistics partner ensuring timely delivery across India.</p>
-                </div>
+        <div class="trust-grid">
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-truck"></i></div>
+                <h5 class="feature-title">Fast Delivery</h5>
+                <p class="feature-desc">Reliable logistics partner ensuring timely delivery across India.</p>
             </div>
-            <div class="col-md-3">
-                <div class="feature-box text-center">
-                    <div class="feature-icon mx-auto"><i class="bi bi-shield-check"></i></div>
-                    <h5 class="fw-bold">Quality Guarantee</h5>
-                    <p class="text-muted small mb-0">All products sourced directly from manufacturers or authorized dealers.</p>
-                </div>
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                <h5 class="feature-title">Quality Guarantee</h5>
+                <p class="feature-desc">All products sourced directly from manufacturers or authorized dealers.</p>
             </div>
-            <div class="col-md-3">
-                <div class="feature-box text-center">
-                    <div class="feature-icon mx-auto"><i class="bi bi-box-seam-fill"></i></div>
-                    <h5 class="fw-bold">Ex Stock Availability</h5>
-                    <p class="text-muted small mb-0">Ready Stock availability to reduce turnaround times.</p>
-                </div>
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-box-seam-fill"></i></div>
+                <h5 class="feature-title">Ex Stock Availability</h5>
+                <p class="feature-desc">Ready Stock availability to reduce turnaround times.</p>
             </div>
-            <div class="col-md-3">
-                <div class="feature-box text-center">
-                    <div class="feature-icon mx-auto"><i class="bi bi-headset"></i></div>
-                    <h5 class="fw-bold">24/7 Support</h5>
-                    <p class="text-muted small mb-0">Dedicated support team available to assist with technical queries.</p>
-                </div>
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-headset"></i></div>
+                <h5 class="feature-title">24/7 Support</h5>
+                <p class="feature-desc">Dedicated support team available to assist with technical queries.</p>
             </div>
         </div>
     </div>
